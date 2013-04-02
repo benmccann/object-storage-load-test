@@ -1,0 +1,986 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+
+    
+
+	
+
+
+
+
+<head profile="http://www.w3.org/2005/10/profile">
+    <link rel="shortcut icon" href="http://o.aolcdn.com/aboutme/production138/images/icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="http://o.aolcdn.com/aboutme/core/v1.1.7/aboutme.core.css" />
+    <link rel="stylesheet" type="text/css" href="http://o.aolcdn.com/aboutme/production138/css/aboutme.css?ts=1357231586249" />
+	<!--[if IE 7]>
+	    <link rel="stylesheet" type="text/css" href="http://o.aolcdn.com/aboutme/production138/css/ie7.css?ts=1357231586249" />
+	<![endif]-->
+	<!--[if IE 8]>
+	    <link rel="stylesheet" type="text/css" href="http://o.aolcdn.com/aboutme/production138/css/ie8.css?ts=1357231586249" />
+	<![endif]-->
+<!--MOBILE head content-->
+    <meta name="apple-itunes-app" content="app-id=500230347, app-argument=aboutMeOpenProfile-benmccann" />
+	<!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
+	<!-- #feds: since loading modernizr anyway, feel free to use in desktop situations as needed-->
+	<script type="text/javascript" src="http://o.aolcdn.com/aboutme/production138/js/mobile/modernizr-custom.js"></script>
+	<!-- Media Queries Polyfill https://github.com/shichuan/html5-boilerplate/wiki/Media-Queries-Polyfill -->
+	<script type="text/javascript">
+	(function(){
+	    var d = document, s = d.createElement('script');
+	    s.type = 'text/javascript';
+	    s.src = 'http://o.aolcdn.com/aboutme/production138/js/mobile/respond.min.js';
+	    Modernizr.mq('(min-width:0)') || d.getElementsByTagName('head')[0].appendChild(s);
+	})();
+   </script>
+<!--/MOBILE head content-->
+<!-- REQUIRESJS STUFF -->
+	<script src="http://o.aolcdn.com/aboutme/production138/js/amd-compiled/require/require.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+/* About.me Require Config */
+(function(requirejs) {
+	var config = {
+		baseUrl: 'http://o.aolcdn.com/aboutme/production138/js/amd-compiled/',
+		paths: {
+			'easyxdm': 'http://o.aolcdn.com/aboutme/core/easyxdm/easyxdm2.4.15',
+			'carousel': 'http://o.aolcdn.com/aboutme/core/plugins/carousel1.5',
+			'log': 'lib/log',
+			'viewer': 'controller/viewer',
+			'mobile': 'controller/mobile',
+			'editmode': 'controller/editmode',
+			'common': 'compiled/common',
+			'nonprofile': 'compiled/nonprofile',
+			'loggedin': 'compiled/loggedin'
+		},
+		waitSeconds: 15
+	}
+	var jqueryplugins = [
+		'autoGrowInput',
+		'backstretch',
+		'colorPicker',
+		'cookie',
+		'debug',
+		'digits',
+		'doTimeout',
+		'dropper',
+		'fieldhint',
+		'fileUpload',
+		'fontAvailable',
+		'form',
+		'getJSONP',
+		'iframeTransport',
+		'imagesLoaded',
+		'inview',
+		'isInArray',
+		'jnice',
+		'json',
+		'jstorage',
+		'lazyshow',
+		'matchFontSize',
+		'msDropDown',
+		'prettyDate',
+		'roundabout',
+		'shrinkLine',
+		'shrinkWrap',
+		'throttle',
+		'tinysort',
+		'toggle',
+		'touchpunch',
+		'touchswipe',
+		'truncate',
+		'validate',
+		'vhide',
+		'widget'
+	];
+	for (var j=0; j<jqueryplugins.length; j++) {
+		var p = jqueryplugins[j];
+		config.paths[p] = 'jquery/'+p;
+	}
+	//console.log(config);
+	requirejs.config(config);
+})(requirejs);
+define('globals', function() {
+	var g = {};
+	g.DOMAIN_NAME = "about.me";
+	g.DOMAIN_NAME_URL = "http://about.me";
+	g.STATIC_HOSTNAME = "http://o.aolcdn.com/aboutme/production138";
+	g.AWS_THUMBNAIL = "http://d3mod6n032mdiz.cloudfront.net";
+	g.AWS_IMAGES = "http://d13pix9kaak6wt.cloudfront.net";
+	g.JS_DEBUG = false;
+	g.NAV_HEIGHT = 36;
+	g.OMNITURE_ON = false;
+	g.OMNITURE_SERVER = "Prod";
+	g.THUMBNAIL_VIEW = false;
+	g.THUMBNAIL2 = false; // remove this global once old thumbnail mode is retired - update view/profile as well - case 118906
+	g.ENVIRONMENT = "production";
+	g.CUSTOMIZE_SAVER_DELAY = "2000";
+	g.FACEBOOK_APP_ID = '249413078192';
+	g.CDN_TIMESTAMP = '1357231586249';
+	g.SIGNUP_DELAY = 10;
+	g.VIMEO_SCREENCAST = true;
+	g.AUTH_TOKEN = "120130163457355549816274957311480278967";
+	g.IOS_APP_PROMO = true;
+	g.BRANCH_ADMIN = false;
+	g.AMD_MODULE_LOGGING = false;
+	g.AMD_COMPILED = true;
+	g.JS_EVENT_LOGGING = false;
+	g.JS_METRIC_LOGGING = false;
+//]]>
+	g.PAGE = 'user';
+//<![CDATA[
+	g.SERVER_MESSAGE = { message: "", status: "ok" };
+//]]>
+//<![CDATA[
+	var console = (g.JS_DEBUG && window.console) ? window.console : { log: function() {}, time: function() {}, timeEnd: function() {}, error: function() {} };
+	console.time = console.time || (function() {});
+	console.timeEnd = console.timeEnd || (function() {});
+	if (g.THUMBNAIL_VIEW) {
+		console.log('thumbnail view');
+		$.holdReady(true);
+		$('html').addClass('bio-ready thumbnail');
+	};
+//]]>
+//<![CDATA[
+	return g;
+});
+//]]>
+</script>
+	<script src="http://o.aolcdn.com/aboutme/core/jquery/jquery1.7.1-jqueryui1.8.6.js"></script>
+	<script src="//cdn.optimizely.com/js/176651799.js"></script>
+<script type="text/javascript">
+	define('applist',function(){
+		return [{"iframe_url": "/content/benmccann/linkedin", "platform": "linkedin", "display_order": 1, "display_name": "LinkedIn", "id": 6}, {"iframe_url": "/content/benmccann/googleplus", "platform": "googleplus", "display_order": 2, "display_name": "Google+", "id": 8}, {"iframe_url": "/content/benmccann/github", "platform": "github", "display_order": 3, "display_name": "Github", "id": 9}];
+	})
+</script>
+<script language="javascript" type="text/javascript">
+//<![CDATA[
+define('data/user', function() {
+	var settings = {
+		user_id: '170236',
+		user_name: 'benmccann',
+		first_name: 'Ben',
+		last_name: ' McCann',
+		display_name: 'Ben McCann',
+		possessive_display_name: 'Ben McCann’s',
+		possessive_first_name: 'Ben’s',
+		twitter_name: '',
+		email_public: false,
+		allow_fave: true,
+		share_buttons: {"share_googleplus": true, "share_linkedin": true, "share_pinterest": true, "share_facebook": true, "share_twitter": true, "share_buttons_location": "profilebox"},
+		follow_buttons: {"follow_instagram": true, "follow_linkedin": true, "follow_wordpress": null, "follow_twitter": true, "follow_tumblr": true},
+		compliment_buttons: {"display_chat": true, "display_creative": true, "display_greatpic": true, "display_love": true, "display_wellwritten": true, "display_cool": true, "display_collaborate": true, "display_fan": true},
+		has_websites_info: true,
+		contact_visible: true,
+		welcome_view_count: 0,
+		colors: {
+			color_input				: '',
+			background_color		: '000',
+			profile_color			: '000000',
+			profile_opacity			: 0,
+			pattern					: '',
+			pattern_opacity			: 100,
+			heading_color			: 'FFF',
+			bio_color				: 'ffffff',
+			name_color				: 'ffffff',
+			links_color				: 'ffffff',
+			saved_colors			: [],
+			profile_shadow			: false
+		},
+		fonts: {
+			typekitEnabled: true,
+			font_name: 'atrament-web-1,atrament-web-2',
+			font_name_size: 130,
+			font_heading: 'ratio-1,ratio-2',
+			font_heading_size: 30,
+			font_bio: 'ratio-1,ratio-2',
+			font_bio_size: 17,
+			font_findme: 'apertura-condensed-1,apertura-condensed-2',
+			font_findme_size: 14,
+			font_kit: 'trv4hfe'
+		},
+		profile: {
+			profile_width: 485,
+			text_left: -567,
+			text_top: 113,
+			bg_offset: 0
+		},
+		images: {
+			background_image: 'http://d13pix9kaak6wt.cloudfront.net/background/benmccann_1344474607_93.jpg',
+			background_height: 555,
+			background_width: 508,
+			background_x: 0,
+			background_y: 0,
+			background_repeat: 'center',
+			profile_image: "",
+			avatar_image: ""
+		},
+		page_complete: {
+			user_name: 'benmccann',
+			bio: 'true',
+			background: 'gallery',
+			services: '5'
+		},
+		location: '',
+		locations: [],
+		contact: {},
+		work: [],
+		education: [],
+		tags: ["startup", "connectifier", "carnegie mellon university", "carnegie mellon", "cmu", "googler", "google", "ben", "benjamin", "mccann"],
+		tags_visible: false,
+		featured_video: {}
+	}
+//]]>
+//<![CDATA[
+	settings.linkedin_id = "0jRhfUB97m";
+//]]>
+//<![CDATA[
+	settings.contact.phone = '';
+	settings.contact.country = '';
+	settings.contact.address1 = '';
+	settings.contact.address2 = '';
+	settings.contact.state = '';
+	settings.contact.city = '';
+	settings.contact.zip = '';
+//]]>
+//<![CDATA[
+	return {
+		Settings: settings
+	}
+});
+//]]>
+</script>
+	<script type="text/javascript" charset="utf-8">
+		require(['main'])
+	</script>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <meta name="robots" content="index" />
+    <title>Ben McCann - Co-founder, Connectifier.com | about.me</title><style type="text/css">
+	div.profile .profile-content {
+		width: 485px;
+	}
+	.background-pattern {
+		opacity: 1.0;
+	}
+	.profile div.profile-head h1.name {
+		font-family: atrament-web-1,atrament-web-2, "proxima-nova-1", "proxima-nova-2", Tahoma, Helvetica, Verdana, sans-serif;
+		font-size: 130px;
+		color: #ffffff;
+	}
+	.profile div.profile-head h2.headline {
+		font-family: ratio-1,ratio-2, "proxima-nova-1", "proxima-nova-2", Tahoma, Helvetica, Verdana, sans-serif;
+		font-size: 30px;
+		color: #FFF;
+	}
+	.profile div.profile_photo {
+		padding-top: 5.0px;
+	}
+	.profile div.bio {
+		font-family: ratio-1,ratio-2, "proxima-nova-1", "proxima-nova-2", Tahoma, Helvetica, Verdana, sans-serif;
+		font-size: 17px;
+		color: #ffffff;
+	}
+	.profile div.bio a {
+		color: #ffffff;
+	}
+	.profile div.rsswrapper h4, .profile div.rsswrapper .source {
+		color: #ffffff;;
+	}
+	.profile div.location,
+	.profile .meta ul.list {
+		font-size: 14px;
+		color: #ffffff;
+	}
+	.profile div.location a,
+	.profile .meta ul.list a {
+		color: #ffffff;
+	}
+	.profile .contactinfo .menu-toggle {
+		font-size:11px;
+		color: #ffffff;
+	}
+	.profile .contactinfo .menu-toggle .triangle {
+		border-top-color: #ffffff;
+	}
+	.profile div.services {
+		color: #FFF;
+	}
+	.profile ul.links {
+		font-family: apertura-condensed-1,apertura-condensed-2, "proxima-nova-1", "proxima-nova-2", Tahoma, Helvetica, Verdana, sans-serif;
+		font-size: 14px;
+	}
+	.profile ul.links a, .profile ul.feeds a {
+		color: #ffffff;
+	}
+	.profile div.services ul li .icon.linkedin,
+	ul.servicelinklist li .linkedin {
+		background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEsElEQVR42r2XaWyUZRDH9YMnghRCbQ0R6XKpQZqYIBoUIocSISAGRWuMJBoTjUftAWpZ222r5VCuFrVr71K23e0l9LInAm2s9QhWPogJMVrbkCKWSivtmnHm2fz3fbrPuxi/0OSXmfnPzDv/vG222WvUz8qsWMbNtF8l3OomjosYd7ClP7PpB//OttOU1dJrC3qhcUfbj8ZMuD25EZfT0i831W1x83R2c39K3ff0ckU3PVN8nDYXTSSutBMEtWdLTiC3m7fVnmNe9HSRs+EUyU31JsRJUk2Pf0vZSdpcfII2FRxDNAjpIxfCzxSa81sOd1Fi9dd+ua0MJNT20FPs8kke2JjfodjEtZaHq2UHNeeqDwIa5jXkVvKR7yho4PXqHlr/WTttLPgSqPrhA000KalEsXRfo9ICc8eQY8+2Ri7zG/IC9RP5gd3XKrstAy95Oml9XgetzW1FVKzMaaSz54cVqzgXDaxz67Mm0gOodfimZeCFsk5a625XrPmkJZhfGLlM+JEc/cdz2yQaSB+g1nf0mm9aBuSPY82nbbT6YDM9xk3kF/8ew33JRTOQWQDt0Y9bQnUj55uWgQ38SlbzkrAiu0lQeWLtNzRwcYT6mfiqbvTtZnXNTjdm1uW2WgZW5XxBy/c30oqcZhC2RjSxn0MuPJKt7ij4pmVgOTt6aF99kGUHGki0a98o0JFeWP3erBqKSvHQdfGFonEsoqjt5bRkj9oBeIZgGVjKjsADe+qCjPn/0UHf0KP50LL9DZTX9ROdGx4VTaKqHek+WrK33u75loH7PzxK4MG9DUEujfl1MGPou1p7kRv8PjRC8zOq8EzcYAP1loH7dn1OwmJuLv6ojgnEodExHZmB/r/Y3dYre9gHmoHdRyl2Ry1JRC4MXrqsg56hn/3jL0rmj/PnS4+Tu+uM0e/4eQDPlwgsA7E7j9DCD2oUkoOB4VEd9A09obpb35XamGEdM8gtAwuzakm4O7NKRfDb0IjOlXXs//cM5iwDC9IrSbiLG8jveb9GXq0OenY6doDdDG5gRjOQWU06c10+Fc8MDk9gXkalnY497lcht5vBcxEtA3PZ2RwmJrVCIbVw+tyQDnqGHtj3YU/mzBn00ipwxzIQk+YjYZazPBDfC8RT/X/qSF8wdG2fd21n8Ewg9UQDM7d7aFaqV0Xwbd8FHczY6sIdzopwM6IJ6IsJzYDLS9Hvlilmsnvh9pTD9NWv53XQs9NlF9jNQMcMvwGPZcDh8tFt75RR5NuHBJVH8z+Wk78M6kgvnG6AHpA9vX+n/itwpHlp+taSIJFsgDE0xBn8ANThmLHtEOZtnzdbfwOzU8tpanIxTecHB+EHQJM4bVupREXE1lLoRg87iLqm13xT+xvgYkpSEU1OnMhUPqTXtyaViAb9StHYncK70CLY8ByXV/sVOMvHI9jVzW8V0OSkYjukB/ghE+tbQupJCYX6jrE/jW85UivGYcAd+UpeX0yaV73KmxKKFNe/mR/kxvhCFdG7Ib4ANWYAZkJy9ArVDbklN/HVbJE4iXo1v8/h9IwvyOBPLP60kgigIdoxz+WVaMzOT/eFaN5xuSU31W0igomr/fV8kdz+F8uDPRGifaVMAAAAAElFTkSuQmCC);
+	}
+	.profile div.services ul li .icon.googleplus,
+	ul.servicelinklist li .googleplus {
+		background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowNjgwMTE3NDA3MjA2ODExODNCNEQ3ODA2MUJDRTBGNiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozQjM4QTc2NjgxQzMxMUUxQkRFM0I3Mjc5MjMzOTg0MSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozQjM4QTc2NTgxQzMxMUUxQkRFM0I3Mjc5MjMzOTg0MSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjAyODAxMTc0MDcyMDY4MTE4Q0JDRDUxRTI3NzU5NDNEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjA2ODAxMTc0MDcyMDY4MTE4M0I0RDc4MDYxQkNFMEY2Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+QiX9rQAABQRJREFUeNq8V2tsFFUU/ubO7Hvb7hZKaYFu2RaaVDSVRhGtQUOEUkGwNUIiP3wkoPaHMf4wYogmoIlgYqxYURTCHx4aiMaEiASx0AoGiqRSYIFWCu22S4vdbme7Ozsv7+7SaSfdbQconuTsZOae1z33O+ee5TbOzcV8l7k8IMgH+2PKjCFZZXEfyc4ysttMunItbPXZYKyZK3OZK1tD4qH5JV6m0pMPp9VyP/2DjwrshQ5/wVlf++myLPNK5quH8m8UewtnzrPIUMODIHmzwJbMA8l0gUzNBZlRAMZqH9eo3HYJkV2fQ40JaWWIawqU4C0wJjMYRwZaYxwut/3j5/po2pdJIZieqYalshpkWh7UIT6hxNidE+4o1vALhnamd+4+0JR4DqyvhqqCysWo0i0UExZNgpLHqRYrk731O7AzCyFdbAH/6fuQ2nwJJdZTBPsrb8H0YLlmMO4osu9bGmQYaiiI2J8NhlKv3uZhYhUZkqoyJNtTmHAeNzSwsRbiVV8yUsrStTaENr2D2MljmiJjtsC8YBGivx2CcKpBk03HWgBp1gjDMElw7K6HIitQ6IKORRGhuo+g9AY0YxzFiG3Na2NlU/AwKUi9RhKLfAiSvzPtLpRIBOH9O3UptVU+D1hshjOANGtcIoCBoC7aVDR07DAcL9eCODM1gJrKH0e08agmM/2nprT6U3YcHPvthVXJDICQCVMp06MQmk/pDLCzZqdMt1EyWa3JDLDuKVAZ2gAVZVwF4VIrbIuW6ABJgay9d62oGKMz4+fGtGs9/lAyA4zVNmY3qVikOBlN0u2jMwJChja1tCCMk/XRiolRLUq6AKIXzxsOQFUxfgAZK2qgmizjGuM8Xs2g2HkdkQvGA1AmCoB1Z8P96pvpjTEEGUuXJ3cjieit25K6b9xhH+BGpzTruZpEzfft2q5LdRxs02rfhrmwKPHeW/8Zwi3nDCH9SmXFuOtcvLx0l8fqtXAuWgy+qQExmmZL0RzYy8phnlkAVRDQvXUzBk8cm7TrmQv1dOPfA/vgqloJYrMl63N6Htw1a/SStES7Pv4A/MnGSZ0POIHn0bN9G3q+qYfjYbpT6jxOmU8+DUf5I5rgwO9HEfqjcdIHFG4YoaCAGjxzegQPS6r0NR8M3lW3m4hIuhJhMzJ1gllPLQabk2voBjTK4wbA/92iT1V2Noq/2A5rSen/E0D37l2Qw7z+8piagzl1X8K9tGrSAkj2Ac4M+9wS2LxeOOhTm/cCN+k3/VzIcCZ43t0A6+widNZvu3cQ2t1uzNu7H2a6u9GAEwIBRLs6wbeeh+uJCpjoEYym3BdXgzgcuLblk3sLIJOWXdx5//Hj6P31MMI+H915QJ/6HTvgfW8DXAsX6r7nPLscMu2cHXV1dx0Au2xOwYeWhhPw79mDSEcHZD48du6PRtF35Agk2jMyy8roMYx0cGfpAxg405zI2J3SNVEAUSQJwb/OGQKN//sf0LJuHSLXr+sM5b+09u6roL+9XRXpZT3RcDnM4avtaFn/Boba2rUAXI8toOgkhm0kRn76w4JRiYOw3TdlUfvjYITFUAi+TZtHKoPOlMTpvCMbAeoz7ptkMOzrHWJUvSEJEBTjmeAvX0HU352cD+hFJQ1FDOnFfcR9xX3GfTMq/fp1qad8UJF/jEDOp8dBjIIou8ADhmUh0Wt6wN9lbBJmGIVOoP4Mwq5af6Gj+T8BBgD0dRW9Dw1BtwAAAABJRU5ErkJggg==);
+	}
+	.profile div.services ul li .icon.github,
+	ul.servicelinklist li .github {
+		background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RkY1RDA2REMyQjg4MTFFMkIxNjZDOEVBMDk4MTYzRTYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RkY1RDA2REQyQjg4MTFFMkIxNjZDOEVBMDk4MTYzRTYiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowQkVBN0U3NTJCODgxMUUyQjE2NkM4RUEwOTgxNjNFNiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowQkVBN0U3NjJCODgxMUUyQjE2NkM4RUEwOTgxNjNFNiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvM56DQAAAYkSURBVHjavFd7TFNX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);
+	}
+	/*retina*/
+	@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+	only screen and (-o-min-device-pixel-ratio: 3/2),
+	only screen and (min-moz-device-pixel-ratio: 1.5),
+	only screen and (min-device-pixel-ratio: 1.5) {
+		.profile div.services ul li a.linkedin,
+		/*ul.servicelinklist li .linkedin {
+			background-image:url(//dcbdluf1ahqio.cloudfront.net/linkedin/84x84.png);
+		}*/
+		.profile div.services ul li .icon.linkedin,
+		ul.servicelinklist li .linkedin {
+			background-image:url(data:image/png;base64,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);
+		}
+		.profile div.services ul li a.googleplus,
+		/*ul.servicelinklist li .googleplus {
+			background-image:url(//dcbdluf1ahqio.cloudfront.net/googleplus/84x84.png);
+		}*/
+		.profile div.services ul li .icon.googleplus,
+		ul.servicelinklist li .googleplus {
+			background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFQAAABUCAYAAAAcaxDBAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMzgwMTE3NDA3MjA2ODExOTJCMEE2M0NEMTFGMThBQyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1Q0UxMzk5RDgxQzMxMUUxQkRFM0I3Mjc5MjMzOTg0MSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1Q0UxMzk5QzgxQzMxMUUxQkRFM0I3Mjc5MjMzOTg0MSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjdFNDk3NEE3NTAyMDY4MTE5MkIwQTYzQ0QxMUYxOEFDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjAzODAxMTc0MDcyMDY4MTE5MkIwQTYzQ0QxMUYxOEFDIi8+IDwvcmRmOkRlc2NyaXB0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);
+		}
+		.profile div.services ul li a.github,
+		/*ul.servicelinklist li .github {
+			background-image:url(//dcbdluf1ahqio.cloudfront.net/github/84x84.png);
+		}*/
+		.profile div.services ul li .icon.github,
+		ul.servicelinklist li .github {
+			background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFQAAABUCAYAAAAcaxDBAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MEJFQTdFNkYyQjg4MTFFMkIxNjZDOEVBMDk4MTYzRTYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MEJFQTdFNzAyQjg4MTFFMkIxNjZDOEVBMDk4MTYzRTYiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowQkVBN0U2RDJCODgxMUUyQjE2NkM4RUEwOTgxNjNFNiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowQkVBN0U2RTJCODgxMUUyQjE2NkM4RUEwOTgxNjNFNiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PtUEqaoAABXuSURBVHja7F0HlFRV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);
+		}
+	}
+	body.profilepage {
+		background-color: #000;
+	}
+	/*profile position*/
+	.profilepage .background-container .profile {
+		top: 113px;
+	}
+	.profilepage .background-container.drag .profile,
+	.profilepage .background-container.repeat .profile,
+	.profilepage .background-container.scale .profile,
+	.profilepage .background-container.center .profile {
+		margin-left: -567px;
+		left: 50%;
+		right: auto;
+	}
+	.profilepage .background-container.instagram-right .profile {
+		right: auto;
+		margin-left: -567px;;
+		left: 50%;
+	}
+	.profilepage .background-container.instagram-left .profile {
+		right: auto;
+		margin-left: -567px;;
+		left: 50%;
+	}
+	.profilepage .background-container.right .profile {
+		right: -567px;
+		margin-left: 0;
+		left: auto;
+	}
+	.profilepage .background-container.left .profile {
+		left: -567px;
+		margin-left: 0;
+		right: auto;
+	}
+	/*background position*/
+	.profilepage .background-container .background {
+		width: 508px;
+		height: 555px;
+		margin-left: -254px;
+	}
+	.profilepage .background-container.drag .background {
+		top: 0px;
+		margin-left: 0px;
+	}
+	.profilepage .background-container.repeat {
+		background-image: url(http://d13pix9kaak6wt.cloudfront.net/background/benmccann_1344474607_93.jpg);
+		background-position: 50% 0px;
+	}
+	.profilepage .background-container.scale .background,
+	.profilepage .background-container.repeat .background {
+		width: 100%;
+		height: 100%;
+		left: 0;
+		margin-left: 0;
+		top: 0;
+	}
+	@media screen
+	and ( max-device-width:579px ) {
+		/* even if scaled, on mobile bg image will show the same way*/
+		.profilepage .mobile-background-container {
+			background-image: url(http://d13pix9kaak6wt.cloudfront.net/background/benmccann_1344474607_93.jpg);
+		}
+	}
+    </style><meta property="og:site_name" content="about.me" /><meta property="og:locale" content="en_US" /><meta property="og:url" content="http://about.me/benmccann" /><link rel="canonical" id="page_url" href="http://about.me/benmccann" /><meta property="og:title" content="Ben McCann (benmccann) on about.me" /><meta property="og:type" content="aboutme_prod:page" /><meta property="fb:app_id" content="249413078192" /><meta name="description" content="View Ben McCann on about.me. About.me makes it easy for you to learn about Ben McCann’s background and interests." /><meta property="og:description" content="View Ben McCann on about.me. About.me makes it easy for you to learn about Ben McCann’s background and interests." /><meta property="og:image" content="http://o.aolcdn.com/dims-global/dims/ABOUTME/5/200/200/80/http://d3mod6n032mdiz.cloudfront.net/thumbnail/400x270/benmccann.jpg" /><meta name="keywords" content="Ben McCann benmccann about.me page" /><meta name="author" content="Ben McCann (benmccann)" /><meta name="HandheldFriendly" content="True" /><meta name="MobileOptimized" content="320" /><meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="cleartype" content="on" />
+</head>
+<body class="profilepage mobile-enabled">
+    		<div class="headerfix"></div>
+<div id="header">
+	<div class="header-content">
+		<div class="pane" style="display:block">
+			<span class="logo nav-item"><span class="nav-item"> </span></span>
+		</div>
+		<div class="pane loggedin">
+	<ul class="nav accountlinks">
+			<li class="welcome-link invisible">
+				<span class="nav-link">Get Started</span>
+			</li>
+			<li class="editbutton">
+				<a href="/edit" class="nav-link" title="View or edit your page.">Edit Page</a>
+			</li>
+			<li class="dashboard nav-link"><a href="/dashboard/#!/overview" class="nav-item">Dashboard</a><a href="/dashboard/#!/overview" class="badge"></a></li>
+			<li class="accountmenu  menu menu-right">
+				<span class="nav-link menu-head">
+					<span class="menu-toggle">Account</span>
+				</span>
+				<div class="menu-container">
+					<div class="menu-content menu-items">
+						<ul>
+							<li class="nonitem loggedinas invisible"><span class="accountname"></span></li>
+							<li class="item"><a href="/account/">Account Settings</a></li>
+							<li class="item"><a href="/share">Share Page</a></li>
+							<li class="item"><a href="/findfriends/">Find Friends</a></li>
+							<li class="item helplink"><a href="http://support.about.me" target="_blank">Help</a></li>
+							<li class="item signin"><a href="/logout_handler">Log Out</a></li>
+						</ul>
+					</div>
+				</div>
+			</li>
+	</ul>
+			<ul class="mobile-login-container">
+				<li class="login"><a class="nav-link" href="/logout_handler">Log Out</a></li>
+			</ul>
+			<a class="logo nav-link" href="https://about.me/"><span class="nav-item"> </span></a>
+	<ul class="nav applinks">
+			<li class="peoplemenu menu">
+				<span class="nav-link menu-head km-find-people-global-nav">
+					<span class="menu-toggle"> </span>
+				</span>
+				<div class="menu-container">
+					<div class="menu-content menu-items">
+						<ul>
+							<li class="nonitem findform">
+								<form onsubmit="return false">
+									<input type="text" name="findpeople" value="" id="findpeople" class="text" placeholder="Find People" />
+									<button class="button button-large" type="submit"><span class="button-content">Go</span></button>
+								</form>
+							</li>
+							<li class="separator"><hr /></li>
+							<li class="item"><a href="http://about.me/directory/">Browse the Featured Directory</a></li>
+							<li class="item"><a href="/findfriends/">Find Your Friends</a></li>
+						</ul>
+					</div>
+				</div>
+			</li>
+			<li class="peoplebrowse">
+				<span class="nav-link" title="Explore the best pages on about.me.">Explore Pages</span>
+			</li>
+	</ul>
+		</div>
+		<div class="pane loggedout">
+	<ul class="nav accountlinks">
+			<li class="signupmenu menu">
+				<span class="nav-link menu-head">
+					<span class="menu-toggle">Sign up to claim your name!</span>
+				</span>
+				<div class="menu-container">
+					<div class="menu-content">
+						<div class="signupmenuform">
+							<p>It’s free and only takes minutes to set up your page.  <a href="https://about.me/">Learn more</a></p>
+<div class="signup">
+<form action="/register" id="signup_user_dropdown" method="post" onsubmit="return false">
+<div style="display: none;"><input id="_authentication_token" name="_authentication_token" type="hidden" value="120130163457355549816274957311480278967" /></div>
+<fieldset class="first_name name">
+	<label class="label" for="first_name">First name</label>
+	<input type="text" name="first_name" id="first_name" class="text first_name" value="" xplaceholder="First name" maxlength="32" />
+</fieldset>
+<fieldset class="last_name name">
+	<label class="label" for="last_name">Last name</label>
+	<input type="text" name="last_name" id="last_name" class="text last_name" value="" maxlength="32" xplaceholder="Last name" />
+</fieldset>
+<fieldset class="email">
+	<label class="label" for="email">Your email address</label>
+	<input type="text" name="email" id="email" class="text email" value="" maxlength="254" xplaceholder="Your email address" />
+</fieldset>
+<input type="hidden" value="user_dropdown" name="location" />
+<div class="buttons">
+    <button type="submit" class="button button- button-submit" id="signup-submitbutton">
+    	<span class="button-content">
+    		<span class="default-text">Create Your Page</span>
+    		<span class="loading-text">Create Your Page</span>
+    	</span>
+    </button>
+</div>
+</form>
+</div>
+						</div>
+					</div>
+				</div>
+			</li>
+			<li class="signin">
+				<a href="https://about.me/login?came_from=benmccann" class="nav-link">Log In</a>
+			</li>
+	</ul>
+			<ul class="mobile-login-container">
+			</ul>
+			<a class="logo nav-link" href="https://about.me/"><span class="nav-item"> </span></a>
+	<ul class="nav applinks">
+	</ul>
+		</div>
+	</div>
+</div>
+	<div class="background-pattern"></div>
+	<div class="profile-container">
+	<div class="background-container center">
+		<div class="background">
+			<img src="http://d13pix9kaak6wt.cloudfront.net/background/benmccann_1344474607_93.jpg" class="background-image" />
+		</div>
+		<div class="mobile-background-container"><img src="http://d13pix9kaak6wt.cloudfront.net/background/benmccann_1344474607_93.jpg" class="mobile-bg-test-img" /></div>
+		<noscript>
+			<div class="profile no-js">
+				<div class="profile-head">
+					<h1 class="name">Ben McCann</h1>
+					<h2 class="headline">Co-founder, Connectifier.com</h2>
+				</div>
+				<div class="profile-content bio-container clearfix">
+					<div class="bio">
+						<p><a href="http://www.benmccann.com" target="_blank">Entrepreneur.<br />
+ex-Googler. CMU alum.</a></p>
+					</div>
+				</div>
+			</div>
+		</noscript>
+		<div class="profile" id="profile_box" itemscope="itemscope" itemtype="http://schema.org/Person">
+			<div class="profile-head invisible">
+				<h1 class="name invisible" itemprop="name">Ben McCann</h1>
+				<h2 class="headline invisible">Co-founder, Connectifier.com</h2>
+				<!--actions-->
+				<ul class="actions menubar invisible">
+					<!-- compliments -->
+					<li class="menu menu-fullwidth comp-menu invisible">
+						<div class="button button-large button-dark menu-head">
+							<span class="button-content menu-toggle"> </span>
+						</div>
+						<div class="menu-container">
+							<div class="menu-content menu-items">
+								<ul>
+									<li class="nonitem comps">
+										<ul class="comp-types clearfix">
+											<!-- fave -->
+											<li class="favebutton invisible allow_fave">Add This Page to Your Favorites</li>
+											<li id="comp-type-love" data-compliment-type="love" class="invisible compliment">Love Your Page</li><!--default-->
+											<li id="comp-type-greatpic" data-compliment-type="greatpic" class="invisible compliment">Great Photo</li><!--default-->
+											<li id="comp-type-wellwritten" data-compliment-type="wellwritten" class="invisible compliment">Well-Written</li>
+											<li id="comp-type-cool" data-compliment-type="cool" class="invisible compliment">You’re Cool</li><!--default-->
+											<li id="comp-type-creative" data-compliment-type="creative" class="invisible compliment">Creative!</li>
+											<li id="comp-type-fan" data-compliment-type="fan" class="invisible compliment">I’m a Fan</li><!--default-->
+										</ul>
+									</li>
+									<li class="separator invisible anonymous"><hr /></li>
+									<li class="nonitem invisible anonymous">
+										<div class="signupmenuform">
+											<p class="subhead">Sign up to <span class="actiontype">compliment</span>, or <a href="/login?came_from=benmccann" class="deferred" data-deferred="compliment">Log In</a>.</p>
+											<!--signup form-->
+<div class="signup">
+<form action="/register" id="signup_compliment" method="post" onsubmit="return false">
+<div style="display: none;"><input id="_authentication_token" name="_authentication_token" type="hidden" value="120130163457355549816274957311480278967" /></div>
+<fieldset class="first_name name">
+	<label class="label" for="first_name">First name</label>
+	<input type="text" name="first_name" id="first_name" class="text first_name" value="" xplaceholder="First name" maxlength="32" />
+</fieldset>
+<fieldset class="last_name name">
+	<label class="label" for="last_name">Last name</label>
+	<input type="text" name="last_name" id="last_name" class="text last_name" value="" maxlength="32" xplaceholder="Last name" />
+</fieldset>
+<fieldset class="email">
+	<label class="label" for="email">Your email address</label>
+	<input type="text" name="email" id="email" class="text email" value="" maxlength="254" xplaceholder="Your email address" />
+</fieldset>
+<input type="hidden" value="compliment" name="location" />
+<div class="buttons">
+    <button type="submit" class="button button-medium button-submit" id="signup-submitbutton">
+    	<span class="button-content">
+    		<span class="default-text">Sign Up and Send</span>
+    		<span class="loading-text">Sign Up and Send</span>
+    	</span>
+    </button>
+</div>
+</form>
+</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</li>
+					<!-- share -->
+					<li class="menu sharebuttons invisible">
+						<div class="button button-large button-dark menu-head">
+							<span class="button-content menu-toggle"> </span>
+						</div>
+						<div class="menu-container">
+							<div class="menu-content menu-items">
+								<ul>
+									<li class="nonitem share_twitter invisible" data-service="twitter">
+										<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-count="horizontal" data-via="aboutdotme" data-related="aboutdotme" data-url="http://about.me/benmccann"></a>
+									</li>
+									<li class="nonitem share_linkedin invisible" data-service="linkedin">
+										<script type="IN/Share" data-counter="right" data-showzero="false" data-url="http://about.me/benmccann"></script>
+									</li>
+									<li class="nonitem share_googleplus invisible" data-service="googleplus">
+									</li>
+									<li class="nonitem share_pinterest invisible" data-service="pinterest" data-url="http://about.me/benmccann" data-thumbnail="//d3mod6n032mdiz.cloudfront.net/thumbnail/803x563/benmccann.jpg" data-description="Ben McCann’s page on about.me – http://about.me/benmccann">
+									</li>
+									<li class="nonitem share_facebook invisible" data-service="facebook">
+										<fb:like href="http://about.me/benmccann" send="false" layout="button_count" width="auto" font="arial" show_faces="false" colorscheme="light"></fb:like>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</li>
+					<!-- email me-->
+					<li class="menu menu-fullwidth email_public emailmebutton invisible">
+						<div class="button button-large button-dark menu-head">
+							<span class="button-content menu-toggle">Email Me</span>
+						</div>
+						<div class="menu-container">
+							<div class="menu-content">
+								<div class="signupmenuform invisible">
+									<form action="/send_message/benmccann" id="emailme" method="post" onsubmit="return false">
+<div style="display: none;"><input id="_authentication_token" name="_authentication_token" type="hidden" value="120130163457355549816274957311480278967" /></div>
+										<fieldset class="emailmessage">
+											<label for="emailme_message">Message (max 1000 characters)</label>
+											<textarea id="emailme_message" name="emailme_message" class="required"></textarea>
+										</fieldset>
+										<p class="emailmedisclaimer">The recipient of this message can respond directly to your email address.</p>
+										<div class="buttons">
+											<button type="submit" value="Send" class="button button-submit submitbutton"><span class="button-content">
+												<span class="default-text">Send</span>
+												<span class="loading-text">Sending...</span>
+											</span></button>
+										</div>
+									</form>
+								</div>
+								<div class="signupmenuform anonymous invisible">
+									<div class="signup">
+										<form action="/register" id="signup_emailme" method="post" onsubmit="return false">
+<div style="display: none;"><input id="_authentication_token" name="_authentication_token" type="hidden" value="120130163457355549816274957311480278967" /></div>
+										<p class="subhead">Sign up to send an email, or <a href="/login?came_from=benmccann">Log In</a>.</p>
+										<fieldset class="first_name name">
+											<label class="label" for="first_name">First name</label>
+											<input type="text" name="first_name" id="first_name" class="text first_name" value="" maxlength="32" />
+										</fieldset>
+										<fieldset class="last_name name">
+											<label class="label" for="last_name">Last name</label>
+											<input type="text" name="last_name" id="last_name" class="text last_name" value="" maxlength="32" />
+										</fieldset>
+										<fieldset class="email">
+											<label class="label" for="email">Enter your email address</label>
+											<input type="text" name="email" id="email" class="text email" value="" maxlength="254" />
+										</fieldset>
+										<fieldset class="emailmessage">
+											<label class="label" for="emailme_message">Email message (max 1000 characters)</label>
+											<textarea id="emailme_message" name="emailme_message" class="required"></textarea>
+										</fieldset>
+										<input type="hidden" value="emailme" name="location" />
+										<div class="buttons">
+											<button type="submit" class="button button-submit" id="signup-submitbutton">
+												<span class="button-content">
+													<span class="default-text">Sign Up and Send</span>
+													<span class="loading-text">Signing up…</span>
+												</span>
+											</button>
+										</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="profile-content clearfix">
+				<!--feature video Embed-->
+				<div class="video invisible">
+				</div>
+				<div class="bio-container clearfix">
+					<div class="profile_photo invisible"></div>
+					<div class="bio clearfix">
+						<div class="biotext"><p><a href="http://www.benmccann.com" target="_blank">Entrepreneur.<br />
+ex-Googler. CMU alum.</a></p></div>
+					</div>
+				</div>
+				<div class="meta invisible">
+					<ul class="locations list invisible">
+					</ul>
+					<div class="contactinfo menu invisible">
+						<span class="menu-head km-clicks-contact-info-visitor">
+							<span class="menu-toggle">Contact Info<span class="triangle"></span> </span>
+						</span>
+						<div class="menu-container">
+							<div class="menu-content menu-items">
+								<ul class="addresslist">
+									<li class="phone"></li>
+									<li class="address">
+										<ul>
+											<li class="address1"></li>
+											<li class="address2"></li>
+											<li class="group">
+												<span class="city"></span>
+												<span class="state"></span>
+												<span class="zip"></span></li>
+											<li class="country"></li>
+										</ul>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<ul class="jobs list invisible">
+					</ul>
+					<ul class="educations list invisible">
+					</ul>
+					<ul class="tags list invisible">
+						<li><a href="/search/#!/tag/startup">startup</a></li><li><a href="/search/#!/tag/connectifier">connectifier</a></li><li><a href="/search/#!/tag/carnegie+mellon+university">carnegie mellon university</a></li><li><a href="/search/#!/tag/carnegie+mellon">carnegie mellon</a></li><li><a href="/search/#!/tag/cmu">cmu</a></li><li><a href="/search/#!/tag/googler">googler</a></li><li><a href="/search/#!/tag/google">google</a></li><li><a href="/search/#!/tag/ben">ben</a></li><li><a href="/search/#!/tag/benjamin">benjamin</a></li><li><a href="/search/#!/tag/mccann">mccann</a></li>
+					</ul>
+				</div>
+				<div class="bevel bevel-services invisible"><hr /></div>
+				<div class="services invisible">
+					<ul id="service-icons" class="services clearfix">
+						<li class="serviceactions">
+							<ul class="menubar">
+								<!--follow button-->
+								<li class="menu followbuttons invisible">
+									<div class="button button-dark km-followbuttons menu-head">
+										<span class="button-content menu-toggle">Follow</span>
+									</div>
+									<div class="menu-container">
+										<div class="menu-content menu-items">
+											<ul>
+												<li class="nonitem follow_linkedin invisible" data-service="linkedin">
+													<span class="button button-small button-icon linkedin km-followbuttons-linkedin" data-href="/linkedin/linkedin_login?invitee_id=benmccann">
+														<span class="button-content">Connect</span>
+													</span>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<!--hidden, used for invisible menu creation-->
+					<ul id="service-icons-setup">
+							<li class="service-icon site_6" data-id="6" data-platform="linkedin" data-name="LinkedIn">
+								<a href="#show_linkedin_6" class="icon linkedin"> <span class="service-icon-overlay"> </span></a>
+							</li>
+							<li class="service-icon site_8" data-id="8" data-platform="googleplus" data-name="Google+">
+								<a href="#show_googleplus_8" class="icon googleplus"> <span class="service-icon-overlay"> </span></a>
+							</li>
+							<li class="service-icon site_9" data-id="9" data-platform="github" data-name="Github">
+								<a href="#show_github_9" class="icon github"> <span class="service-icon-overlay"> </span></a>
+							</li>
+					</ul>
+				</div>
+			</div>
+			<ul class="links clearfix invisible">
+					<li class="site_5" style="background-image: url(http://d15rluch0y3zzq.cloudfront.net/favicon/7a4438f1bd98647d1bdcc32e020eaa4c.png)">
+						<a href="http://www.benmccann.com" target="_blank" class="website site_5">
+							<span class="displayname">benmccann.com</span></a>
+					</li>
+					<li class="site_7" style="background-image: url(http://d15rluch0y3zzq.cloudfront.net/favicon/57b182544c401da8462d249a3b4b4955.png)">
+						<a href="https://angel.co/ben-mccann" target="_blank" class="website site_7">
+							<span class="displayname">angel.co</span></a>
+					</li>
+			</ul>
+			<div class="profile-content no-thumbnail">
+				<div class="mobile-links invisible">
+					<ul>
+							<li class="app-link" data-id="6">
+								<a href="#show_mobile_linkedin_6">
+									<span class="displayname">LinkedIn</span>
+									<span class="icon" aria-hidden="true" data-icon="]"></span>
+								</a>
+							</li>
+							<li class="app-link" data-id="8">
+								<a href="#show_mobile_googleplus_8">
+									<span class="displayname">Google+</span>
+									<span class="icon" aria-hidden="true" data-icon="]"></span>
+								</a>
+							</li>
+							<li class="app-link" data-id="9">
+								<a href="#show_mobile_github_9">
+									<span class="displayname">Github</span>
+									<span class="icon" aria-hidden="true" data-icon="]"></span>
+								</a>
+							</li>
+						</ul>
+						<ul>
+							<li class="flat-link">
+								<a href="http://www.benmccann.com" target="_blank">
+									<span class="displayname">benmccann.com</span>
+									<span class="icon" aria-hidden="true" data-icon="A"></span>
+								</a>
+							</li>
+							<li class="flat-link">
+								<a href="https://angel.co/ben-mccann" target="_blank">
+									<span class="displayname">angel.co</span>
+									<span class="icon" aria-hidden="true" data-icon="A"></span>
+								</a>
+							</li>
+					</ul>
+				</div>
+			</div>
+		</div><!-- /profile -->
+	</div><!--/end background-container-->
+	</div><!--/end profile-container-->
+	<div id="large_avatar_container" class="container avatar-large" style="display:none">
+	</div>
+<div class="displayname invisible">Ben McCann</div>
+<div id="services_modal" class="content" style="display:none">
+    <div id="container_nav" style="display:none">
+        <ul class="tabheader">
+            <li class="site site_6" data-id="6">
+                <a href="#switch_linkedin_6" class="tab tab_6">LinkedIn</a>
+            </li>
+            <li class="site site_8" data-id="8">
+                <a href="#switch_googleplus_8" class="tab tab_8">Google+</a>
+            </li>
+            <li class="site site_9" data-id="9">
+                <a href="#switch_github_9" class="tab tab_9">Github</a>
+            </li>
+        </ul>
+    </div>
+    <div class="wrapper"></div>
+</div>
+	<div id="welcome" class="invisible">
+		<div class="guide">
+			<p class="guidename">Veronica Belmont - <span class="italic grey">about.me user since 2010</span></p>
+		</div>
+		<ul class="tabs clearfix">
+			<li><a href="#step1" class="tab step1 steps stats-notrack"><span class="step-inner">1</span><span class="tabname">create &amp; customize</span></a></li>
+			<li><a href="#step2" class="tab step2 steps stats-notrack"><span class="step-inner">2</span><span class="tabname">Connect &amp; Share</span></a></li>
+			<li><a href="#step3" class="tab step3 steps stats-notrack"><span class="step-inner">3</span><span class="tabname">Benefits</span></a></li>
+		</ul>
+		<div id="step1" class="tab clearfix active">
+			<p class="guidetext indent">“First, customize your page. It’s easy and fun to design!”</p>
+			<div class="text">
+				<h2 class="big">Your Name</h2>
+				<p class="bio">Hi! I’m currently living in <span class="grey italic">(City)</span>, where I work at <span class="grey italic">(Work Place) </span>
+					doing <span class="grey italic">(Job Title)</span>. When I’m not working I like to <span class="grey italic">(Hobby)</span>,
+					<span class="grey italic">(Interest)</span> and <span class="grey italic">(Passion)</span>. Connect with me!</p>
+			</div>
+			<p class="buttons"><span class="button button-dark button-large"><span class="button-content">Next: Connect &amp; Share</span></span></p>
+		</div>
+		<div id="step2" class="tab clearfix">
+			<p class="guidetext indent">“Next, connect services and send people to your page.”</p>
+			<p class="buttons"><span class="button button-dark button-large"><span class="button-content">Next: Benefits</span></span></p>
+		</div>
+		<div id="step3" class="tab clearfix">
+			<p class="guidetext indent">“That’s it! Let about.me do all of the work for you.”</p>
+			<div class="text big">
+				<p class="checkmark">Showcase a 360 degree view of who you are</p>
+				<p class="checkmark">Help people find and follow you on your social networks</p>
+				<p class="checkmark">Be found for new opportunities</p>
+			</div>
+			<p class="buttons"><span class="button button-submit button-large"><span class="button-content">Get Started</span></span></p>
+		</div>
+	</div>
+	<div class="mobile-nav">
+	<ul class="nav applinks">
+			<li class="peoplemenu">
+				<span class="mobile-nav-heading">
+					<span class="menu-toggle"> </span>
+				</span>
+				<div class="menu-container">
+					<div class="">
+						<ul>
+							<li class="nonitem findform">
+								<form onsubmit="return false">
+									<input type="text" name="findpeople" value="" id="findpeople" class="text" placeholder="Find People" />
+									<button class="button button-large" type="submit"><span class="button-content">Go</span></button>
+								</form>
+							</li>
+							<li class="separator"><hr /></li>
+							<li class="item"><a href="http://about.me/directory/">Browse the Featured Directory</a></li>
+						</ul>
+					</div>
+				</div>
+			</li>
+	</ul>
+	<ul class="nav accountlinks">
+			<li class="dashboard nav-link"><a href="/dashboard/#!/overview" class="nav-item">Dashboard</a><a href="/dashboard/#!/overview" class="badge"></a></li>
+			<li class="accountmenu ">
+				<span class="mobile-nav-heading">
+					<span class="menu-toggle">Account</span>
+				</span>
+				<div class="menu-container">
+					<div class="">
+						<ul>
+							<li class="nonitem loggedinas invisible"><span class="accountname"></span></li>
+							<li class="item"><a href="/account/">Account Settings</a></li>
+							<li class="item"><a href="/share">Share Page</a></li>
+							<li class="item"><a href="/findfriends/">Find Friends</a></li>
+							<li class="item helplink"><a href="http://support.about.me" target="_blank">Help</a></li>
+							<li class="item signin"><a href="/logout_handler">Log Out</a></li>
+						</ul>
+					</div>
+				</div>
+			</li>
+	</ul>
+	</div>
+    <!-- People Browse -->
+        <div class="peopleBrowse">
+            <div class="browseWrapper">
+                <div class="hidePeopleBrowse km-people-carousel-back-profile button button-dark"><p>Hide</p></div>
+                <ul class="browse"></ul>
+            </div>
+        </div>
+        <div class="peopleBrowse-overlay">
+        </div>
+    <script type="text/javascript">
+	var _kmq = window._kmq || [];
+	function _kms(u){
+		setTimeout(function(){
+			var s = document.createElement('script'); var f = document.getElementsByTagName('script')[0]; s.type = 'text/javascript'; s.async = true;
+			s.src = u; f.parentNode.insertBefore(s, f);
+		}, 1);
+	}
+	_kms('//i.kissmetrics.com/i.js');_kms('//doug1izaerwt3.cloudfront.net/fd27a0b2f6652a46eed1ad15f26aed09717cd6b5.1.js');
+	_kmq.push(function(){
+		var params = KM.uprts(KM.u()).params;
+		if(param = params['NCID'] || params['ncid']) {
+			_kmq.push(['set', { 'NCID': param }]);
+		}
+	});
+	</script>
+    <script type="text/javascript">
+    //<![CDATA[
+        var _kiq = _kiq || [];
+        (function(u){
+            var s = document.createElement('script'), f = document.getElementsByTagName('script')[0];
+            s.type = 'text/javascript'; s.async = true;
+            s.src = '//s3.amazonaws.com/j.kissinsights.com/u/' + u + '.js?' + (5*Math.floor(new Date().getMinutes()/5));
+            f.parentNode.insertBefore(s, f);
+        })('134/01ee118052a9f5cc58b7534ca204e1b29e390145');
+    //]]>
+    </script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17228769-1']);
+      _gaq.push(['_trackPageview',location.pathname + location.search + location.hash]);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+</body>
+</html>

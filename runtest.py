@@ -25,4 +25,7 @@ def upload(data):
 with open ('test.html', 'r') as myfile:
   data = myfile.read()
   pool = Pool(processes=100)
-  pool.apply(upload, args=(data,))
+  for i in range(100):
+    pool.apply_async(upload, args=(data,))
+  pool.close()
+  pool.join()

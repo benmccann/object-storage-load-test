@@ -5,6 +5,7 @@ import object_storage
 import random
 import string
 import time
+import traceback
 from multiprocessing import Pool
 
 parser = argparse.ArgumentParser(description='Load test object storage')
@@ -23,6 +24,8 @@ def upload(data):
     sl_storage['loadtest'][remote_filename].send(data)
   except object_storage.errors.ResponseError, e:
     print 'Received ' + e.status + ': ' + e.reason
+  except:
+    print traceback.format_exc()
   time.sleep(1)
   upload(data)
 

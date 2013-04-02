@@ -7,6 +7,10 @@ group = 'com.benmccann'
 version = '1.0-SNAPSHOT'
 mainClassName = 'com.benmccann.ObjectStorageLoadTest'
 
+run {
+  args project.args.split('\\s+')
+}
+
 sourceSets {
   main {
     java {

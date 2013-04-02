@@ -1,5 +1,3 @@
-To setup:
+This writes to a container named 'loadtest' in the SoftLayer dal05 data center.
 
-    pip install softlayer-object-storage
-
-Then create a 'loadtest' container in the dal05 datacenter
+The Java version should be preferred because the Python stuff here reacts poorly to [SoftLayer's broken servers](https://github.com/softlayer/softlayer-object-storage-python/issues/17).

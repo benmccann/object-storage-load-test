@@ -62,7 +62,7 @@ def upload(data):
   time.sleep(1)
   upload(data)
 
-with open ('test.html', 'r') as myfile:
+with open ('resources/test.html', 'r') as myfile:
   data = myfile.read()
   pool = Pool(processes=10)
   for i in range(20):

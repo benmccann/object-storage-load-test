@@ -1,0 +1,37 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+sourceCompatibility = 1.7
+group = 'com.benmccann'
+version = '1.0-SNAPSHOT'
+mainClassName = 'com.benmccann.ObjectStorageLoadTest'
+
+sourceSets {
+  main {
+    java {
+      srcDir 'java'
+    }
+    resources {
+      srcDir 'resources'
+    }
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile 'ch.qos.logback:logback-classic:1.0.11'
+  compile 'com.beust:jcommander:1.30'
+  compile 'com.google.guava:guava:14.0.1'
+  compile 'com.google.inject:guice:3.0'
+  compile 'com.google.inject.extensions:guice-assistedinject:3.0'
+  compile 'commons-io:commons-io:2.4'
+  compile 'org.jclouds.api:swift:1.5.9'
+  compile 'org.jclouds.driver:jclouds-slf4j:1.5.9'
+  compile 'org.projectlombok:lombok:0.11.6'
+  compile 'org.slf4j:slf4j-api:1.7.2'
+  testCompile 'junit:junit:4.10'
+}
